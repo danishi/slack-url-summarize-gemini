@@ -1,2 +1,1 @@
-# slack-url-summarize-gemini
-Summarize URLs in Slack messages using Gemini
+# Summarize URLs in Slack messages using Gemini
