@@ -65,6 +65,7 @@ Create a `.env` file in the root directory and add the following environment var
 SLACK_BOT_TOKEN=your-slack-bot-token
 SLACK_SIGNING_SECRET=your-slack-signing-secret
 SLACK_REACTION_KEY=the-reaction-keyword
+SLACK_PROCESSING_REACTION_KEY=the-processing-reaction-keyword
 GOOGLE_CLOUD_PROJECT=your-Google Cloud-project-id
 GOOGLE_CLOUD_LOCATION=asia-northeast1
 GOOGLE_MODEL_NAME=gemini-1.5-flash-001
@@ -73,6 +74,7 @@ GOOGLE_MODEL_NAME=gemini-1.5-flash-001
 - **SLACK_BOT_TOKEN**: Obtain this from Slack after installing your app.
 - **SLACK_SIGNING_SECRET**: Found in your Slack app's Basic Information page.
 - **SLACK_REACTION_KEY**: The emoji name that triggers the bot (e.g., `summarize`).
+- **SLACK_PROCESSING_REACTION_KEY**: The emoji name that processing the bot (e.g., `processing`).
 - **GOOGLE_CLOUD_PROJECT**: Your Google Cloud project ID.
 - **GOOGLE_CLOUD_LOCATION**: The location of your Google Cloud resources (e.g., `asia-northeast1`).
 - **GOOGLE_MODEL_NAME**: The gen AI model name (e.g., `gemini-1.5-flash-001`).
@@ -97,12 +99,11 @@ zip -r function.zip .
 
 ```bash
 gcloud functions deploy slack_events_fn \
-  --runtime python39 \
+  --runtime python312 \
   --trigger-http \
   --allow-unauthenticated \
   --entry-point slack_events_fn \
   --memory 512MB \
-  --set-env-vars SLACK_BOT_TOKEN=your-slack-bot-token,SLACK_SIGNING_SECRET=your-slack-signing-secret,SLACK_REACTION_KEY=the-reaction-keyword,GOOGLE_CLOUD_PROJECT=your-Google Cloud-project-id,GOOGLE_CLOUD_LOCATION=asia-northeast1
 ```
 
 **Parameters:**
@@ -112,7 +113,6 @@ gcloud functions deploy slack_events_fn \
 - **--allow-unauthenticated**: Allow public access.
 - **--entry-point**: The function to execute (`slack_events_fn`).
 - **--memory**: Allocate enough memory (recommended 512MB or higher).
-- **--set-env-vars**: Pass environment variables.
 
 #### c. Note the Function URL
 
@@ -131,12 +131,14 @@ After deployment, note the URL provided. This will be used in Slack app configur
 - Under **Scopes**, add the following **Bot Token Scopes**:
   - `app_mentions:read`
   - `channels:history`
+  - `reactions:read`
   - `chat:write`
+  - `commands`
+  - `groups:history`
   - `reactions:read`
   - `reactions:write`
-  - `commands`
+  - `users:read`
   - `im:history`
-  - `im:write`
 
 ### 3. Configure Slash Commands
 

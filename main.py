@@ -17,6 +17,7 @@ MAX_SUMMARIZED_LENGTH = 500
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
 SLACK_REACTION_KEY = os.environ["SLACK_REACTION_KEY"]
+SLACK_PROCESSING_REACTION_KEY = os.environ["SLACK_PROCESSING_REACTION_KEY"]
 PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
 LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION")
 MODEL_NAME = os.environ.get("GOOGLE_MODEL_NAME")
@@ -249,7 +250,7 @@ def reaction_add(event, say, client):
         return
 
     # 処理中リアクション追加
-    client.reactions_add(channel=channel, timestamp=ts, name="processing")
+    client.reactions_add(channel=channel, timestamp=ts, name=SLACK_PROCESSING_REACTION_KEY)
 
     response = requests.get(url, timeout=10)
     url = response.url
@@ -266,7 +267,7 @@ def reaction_add(event, say, client):
     keywords = generated["keywords"]
 
     # 処理中リアクション削除
-    client.reactions_remove(channel=channel, timestamp=ts, name="processing")
+    client.reactions_remove(channel=channel, timestamp=ts, name=SLACK_PROCESSING_REACTION_KEY)
 
     # スレッドへの返信として投稿
     slack_response = format_slack_post(title, url, summary, None, keywords)

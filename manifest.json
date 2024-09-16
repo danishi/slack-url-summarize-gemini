@@ -1,0 +1,51 @@
+{
+    "display_information": {
+        "name": "URL Summarizer with Gemini",
+        "description": "Geminiによってウェブページの内容をキーワードと共に日本語でサマライズします",
+        "background_color": "#4f4e4f"
+    },
+    "features": {
+        "bot_user": {
+            "display_name": "URL Summarizer with Gemini",
+            "always_online": true
+        },
+        "slash_commands": [
+            {
+                "command": "/url-summarizer",
+                "url": "https://<your-cloudfunctions-url>.cloudfunctions.net/slack_url_summarize_gemini",
+                "description": "URL Summarizer",
+                "usage_hint": "URL",
+                "should_escape": false
+            }
+        ]
+    },
+    "oauth_config": {
+        "scopes": {
+            "bot": [
+                "app_mentions:read",
+                "channels:history",
+                "channels:read",
+                "chat:write",
+                "commands",
+                "groups:history",
+                "reactions:read",
+                "users:read",
+                "reactions:write",
+                "im:history"
+            ]
+        }
+    },
+    "settings": {
+        "event_subscriptions": {
+            "request_url": "https://<your-cloudfunctions-url>.cloudfunctions.net/slack_url_summarize_gemini",
+            "bot_events": [
+                "app_mention",
+                "message.im",
+                "reaction_added"
+            ]
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}
