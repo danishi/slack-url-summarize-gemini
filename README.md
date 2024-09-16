@@ -1,6 +1,6 @@
 # Summarize URLs in Slack messages using Gemini
 
-A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Functions and Vertex AI Gemini 1.5 Flash model.
+A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Functions and Vertex AI Gemini model.
 
 ## Table of Contents
 
@@ -20,7 +20,6 @@ A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Fun
 - Automatically summarizes articles from shared URLs in Slack.
 - Extracts important keywords and generates a summary.
 - Integrates with Google Cloud Functions and Vertex AI.
-- Responds to slash commands, messages containing URLs, and reactions.
 
 ## Architecture
 
@@ -133,21 +132,13 @@ After deployment, note the URL provided. This will be used in Slack app configur
   - `channels:history`
   - `reactions:read`
   - `chat:write`
-  - `commands`
   - `groups:history`
   - `reactions:read`
   - `reactions:write`
   - `users:read`
   - `im:history`
 
-### 3. Configure Slash Commands
-
-- Go to **Slash Commands** and click **"Create New Command"**.
-- **Command**: `/url-summarizer`
-- **Request URL**: Your Google Cloud Function URL (from deployment).
-- **Short Description**: Summarizes a shared URL.
-
-### 4. Configure Event Subscriptions
+### 3. Configure Event Subscriptions
 
 - Go to **Event Subscriptions** and toggle **Enable Events** to **On**.
 - **Request URL**: Enter your Google Cloud Function URL.
@@ -155,36 +146,16 @@ After deployment, note the URL provided. This will be used in Slack app configur
   - `message.channels`
   - `reaction_added`
 
-### 5. Configure Interactivity & Shortcuts
+### 4. Configure Interactivity & Shortcuts
 
 - Go to **Interactivity & Shortcuts** and toggle **Interactivity** to **On**.
 - **Request URL**: Enter your Google Cloud Function URL.
 
-### 6. Install the App to Your Workspace
+### 5. Install the App to Your Workspace
 
 - Go to **Install App** and click **"Install App to Workspace"**.
 - Authorize the app to your workspace.
 - Copy the **Bot User OAuth Token** and **Signing Secret** to your `.env` file or set them as environment variables in Google Cloud.
-
-## Usage
-
-### 1. Using the Slash Command
-
-In any channel, type:
-
-```plaintext
-/url-summarizer https://example.com/article
-```
-
-The bot will respond with a summarized version of the article.
-
-### 2. Automatic Summarization
-
-Simply share a URL in a channel where the bot is present, and it will automatically provide a summary.
-
-### 3. Using Reactions
-
-Add the specified reaction (e.g., `:summarize:`) to a message containing a URL, and the bot will reply with a summary.
 
 ## License
 

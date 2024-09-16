@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.google_cloud_functions import SlackRequestHandler
 import vertexai
-from vertexai.generative_models import GenerativeModel
+from vertexai.generative_models import GenerativeModel, Tool
+from vertexai.preview.generative_models import grounding
 
 
 # 環境変数の読み込み
@@ -99,7 +100,7 @@ def generate_summary(text):
       stream=False,
     )
 
-    json_text = responses.text
+    json_text = response.text
     return json.loads(json_text)
 
 
@@ -165,22 +166,6 @@ def process_url(text, say):
         response_type="in_channel",
         unfurl_links=False,
     )
-
-
-# Slackコマンドハンドラ
-def handle_command_ack(ack):
-    """コマンドのACKを処理する関数"""
-    ack()
-
-
-def handle_command(request, say):
-    """コマンドを処理する関数"""
-    text = request.body["text"]
-    debug_log("text", text)
-    process_url(text, say)
-
-
-app.command("/url-summarizer")(ack=handle_command_ack, lazy=[handle_command])
 
 
 def ignore_retry_request(request, ack, next):

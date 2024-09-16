@@ -8,16 +8,7 @@
         "bot_user": {
             "display_name": "URL Summarizer with Gemini",
             "always_online": true
-        },
-        "slash_commands": [
-            {
-                "command": "/url-summarizer",
-                "url": "https://<your-cloudfunctions-url>.cloudfunctions.net/slack_url_summarize_gemini",
-                "description": "URL Summarizer",
-                "usage_hint": "URL",
-                "should_escape": false
-            }
-        ]
+        }
     },
     "oauth_config": {
         "scopes": {
@@ -26,7 +17,6 @@
                 "channels:history",
                 "channels:read",
                 "chat:write",
-                "commands",
                 "groups:history",
                 "reactions:read",
                 "users:read",
