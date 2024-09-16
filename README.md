@@ -44,7 +44,7 @@ A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Fun
 
 ```bash
 git clone https://github.com/danishi/slack-url-summarize-gemini.git
-cd url-summarizer-slack-bot
+cd slack-url-summarize-gemini
 ```
 
 ### 2. Install Dependencies
