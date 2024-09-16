@@ -8,7 +8,6 @@ A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Fun
 
 ## Table of Contents
 
-
 - [Features](#features)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
@@ -29,14 +28,14 @@ A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Fun
 
 - **Slack Bot**: Built using the `slack_bolt` framework.
 - **Google Cloud Functions**: Hosts the bot's backend logic.
-- **Vertex AI**: Uses the Gemini 1.5 Flash model for text summarization.
+- **Vertex AI**: Uses the Gemini model for text summarization.
 - **Dependencies**: Managed via `requirements.txt`.
 
 ## Prerequisites
 
 - **Google Cloud Platform (Google Cloud) Account** with billing enabled.
 - **Slack Workspace** where you have permission to install apps.
-- **Python 3.8+** installed locally for development.
+- **Python 3.12+** installed locally for development.
 - **Google Cloud SDK** installed and configured with your account.
 
 ## Setup
