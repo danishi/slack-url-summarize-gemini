@@ -4,7 +4,10 @@
 
 A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Functions and Vertex AI Gemini model.
 
+![demo](https://github.com/user-attachments/assets/d7009994-3f27-4c8b-af33-2efe1f46846c)
+
 ## Table of Contents
+
 
 - [Features](#features)
 - [Architecture](#architecture)
@@ -13,7 +16,6 @@ A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Fun
 - [Configuration](#configuration)
 - [Deployment](#deployment)
 - [Slack App Setup](#slack-app-setup)
-- [Usage](#usage)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
