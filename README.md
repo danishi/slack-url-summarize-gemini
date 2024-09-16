@@ -2,7 +2,7 @@
 [![MIT](https://img.shields.io/github/license/danishi/textlint-rule-gc-product-name)](https://github.com/danishi/slack-url-summarize-gemini/blob/main/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
-A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Functions and Vertex AI Gemini model.
+A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Functions (Cloud Run function 1st gen) and Vertex AI Gemini model.
 
 ![demo](https://github.com/user-attachments/assets/d7009994-3f27-4c8b-af33-2efe1f46846c)
 
