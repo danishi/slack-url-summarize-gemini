@@ -85,7 +85,7 @@ def generate_summary(text):
 - 要約文は最大 {MAX_SUMMARIZED_LENGTH} 文字まで
 - 製品名などの英語と日本語の文字列間は必ず半角スペースを入れてください
 - 句読点の前後、括弧の前後、またYYYY年MM月DD日のような日付表現では、半角スペースは不要
-- キーワードを上位3つまで入れてTwitter投稿用の文言も作る
+- キーワードを上位3つまで入れてSNS投稿用の文言も作る
 '''
 
     response_schema = {
