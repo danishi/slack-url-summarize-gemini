@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.google_cloud_functions import SlackRequestHandler
 import vertexai
-from vertexai.generative_models import GenerativeModel, Tool
+from vertexai.generative_models import GenerativeModel, GenerationConfig, Tool
 from vertexai.preview.generative_models import grounding
 
 
@@ -86,21 +86,40 @@ def generate_summary(text):
 - 製品名などの英語と日本語の文字列間は必ず半角スペースを入れてください
 - 句読点の前後、括弧の前後、またYYYY年MM月DD日のような日付表現では、半角スペースは不要
 - キーワードを上位3つまで入れてTwitter投稿用の文言も作る
+'''
 
-#JSONフォーマット
-{{"summary": "ここにサマリ文章", "keywords": ["キーワード1", "キーワード2", "キーワード3", "キーワード4", "キーワード5"], "tweet": "ここにTwitter投稿文言"}}'''
+    response_schema = {
+        "type_": "OBJECT",
+        "properties": {
+            "summary": {
+                "type_": "STRING",
+            },
+            "keywords": {
+                "type_": "ARRAY",
+                "items": {
+                    "type_": "STRING",
+                },
+            },
+            "post": {
+                "type_": "STRING",
+            },
+        },
+        "required": ["summary", "keywords"],
+    }
 
     response =  model.generate_content(
       [prompt],
-      generation_config={
-        "max_output_tokens": 8192,
-        "temperature": 0.5,
-        "top_p": 0.95,
-      },
+      generation_config=GenerationConfig(
+        max_output_tokens=8192,
+        temperature=0.5,
+        response_mime_type="application/json",
+        response_schema=response_schema
+      ),
       stream=False,
     )
 
     json_text = response.text
+    debug_log("json_text", json_text)
     return json.loads(json_text)
 
 

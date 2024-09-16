@@ -1,4 +1,6 @@
 # Summarize URLs in Slack messages using Gemini
+[![MIT](https://img.shields.io/github/license/danishi/textlint-rule-gc-product-name)](https://github.com/danishi/slack-url-summarize-gemini/blob/main/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
 A Slack bot that summarizes URLs shared in Slack channels using Google Cloud Functions and Vertex AI Gemini model.
 
