@@ -6,9 +6,12 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.google_cloud_functions import SlackRequestHandler
-import vertexai
-from vertexai.generative_models import GenerativeModel, GenerationConfig, Tool
-from vertexai.preview.generative_models import grounding
+from google import genai
+from google.genai.types import (
+    GenerateContentConfig,
+    Tool,
+    GoogleSearch,
+)
 
 
 # 環境変数の読み込み
@@ -62,17 +65,9 @@ def extract_article_text(url):
 
 def generate_summary(text):
     """記事テキストを要約する関数"""
-    vertexai.init(project=PROJECT_ID, location=LOCATION)
-
-    model = GenerativeModel(
-        MODEL_NAME,
-        system_instruction="You are a helpful assistant that summarizes articles and extracts important keywords.",
-        tools=[
-            Tool.from_google_search_retrieval(
-                google_search_retrieval=grounding.GoogleSearchRetrieval()
-            ),
-        ],
-    )
+    client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
+    
+    system_instruction = "You are a helpful assistant that summarizes articles and extracts important keywords."
 
     prompt=f'''以下の #文章 を #ルール に従い、日本語で要約してください。
 またSNS発信のためハッシュタグをつけたいです。記事内容の特徴を表すキーワードを5つほど選んでください。
@@ -89,33 +84,36 @@ def generate_summary(text):
 '''
 
     response_schema = {
-        "type_": "OBJECT",
+        "type": "OBJECT",
         "properties": {
-            "summary": {
-                "type_": "STRING",
-            },
+            "summary": {"type": "STRING"},
             "keywords": {
-                "type_": "ARRAY",
+                "type": "ARRAY",
                 "items": {
-                    "type_": "STRING",
+                    "type": "STRING",
                 },
             },
             "post": {
-                "type_": "STRING",
+                "type": "STRING",
             },
         },
         "required": ["summary", "keywords"],
     }
 
-    response =  model.generate_content(
-      [prompt],
-      generation_config=GenerationConfig(
-        max_output_tokens=8192,
-        temperature=0.5,
-        response_mime_type="application/json",
-        response_schema=response_schema
-      ),
-      stream=False,
+    # google_search_tool = Tool(
+    #     google_search = GoogleSearch()
+    # )
+
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt,
+        config=GenerateContentConfig(
+            temperature=0.5,
+            response_mime_type="application/json",
+            response_schema=response_schema,
+            system_instruction=system_instruction,
+            # tools=[google_search_tool],
+        ),
     )
 
     json_text = response.text
