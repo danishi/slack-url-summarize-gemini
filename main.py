@@ -1,17 +1,11 @@
 import json
 import os
 import re
-import requests
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.google_cloud_functions import SlackRequestHandler
 from google import genai
-from google.genai.types import (
-    GenerateContentConfig,
-    Tool,
-    GoogleSearch,
-)
+from google.genai.types import GenerateContentConfig
 
 
 # 環境変数の読み込み
@@ -47,34 +41,24 @@ def debug_log(name, data):
     print(f"[DEBUG] {name} = {data}")
 
 
-def extract_article_text(url):
-    """指定したURLから記事の本文を抜き出す関数"""
-    response = requests.get(url)
-    response.encoding = response.apparent_encoding
-    soup = BeautifulSoup(response.text, "html.parser")
-    title = soup.title.string if soup.title else "タイトルが見つかりませんでした"
-
-    debug_log("title", title)
-    title = re.sub(r"<[^>]+>|[\n\r]+", " ", title)
-    text = soup.find("body").get_text()
-    text = re.sub(r"<[^>]+>", " ", text)
-    info = f"Fallback to use 'requests'. text = {text}"
-
-    return {"title": title, "text": text, "info": info}
-
-
-def generate_summary(text):
-    """記事テキストを要約する関数"""
+def generate_summary(url):
+    """URLの記事を要約する関数"""
     client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
-    
-    system_instruction = "You are a helpful assistant that summarizes articles and extracts important keywords."
 
-    prompt=f'''以下の #文章 を #ルール に従い、日本語で要約してください。
+    system_instruction = """You are a helpful assistant that summarizes articles and extracts important keywords.
+出力する要約文やSNS投稿文はSlackのMarkdownフォーマット(mrkdwn)に準拠してください。
+- 太字: *テキスト*
+- イタリック: _テキスト_
+- コード: `テキスト`
+- リンク: <URL|テキスト>
+- 箇条書き: 先頭に「• 」を使用"""
+
+    prompt = f'''以下の #URL の記事を読み取り、#ルール に従い、日本語で要約してください。
 またSNS発信のためハッシュタグをつけたいです。記事内容の特徴を表すキーワードを5つほど選んでください。
 その際サービス名や製品名を優先するようにしてください。その後結果を JSON 形式で出力してください。最後に句読点はつけないでください。
 
-#文章
-{text}
+#URL
+{url}
 
 #ルール
 - 要約文は最大 {MAX_SUMMARIZED_LENGTH} 文字まで
@@ -86,6 +70,7 @@ def generate_summary(text):
     response_schema = {
         "type": "OBJECT",
         "properties": {
+            "title": {"type": "STRING"},
             "summary": {"type": "STRING"},
             "keywords": {
                 "type": "ARRAY",
@@ -97,12 +82,8 @@ def generate_summary(text):
                 "type": "STRING",
             },
         },
-        "required": ["summary", "keywords"],
+        "required": ["title", "summary", "keywords"],
     }
-
-    # google_search_tool = Tool(
-    #     google_search = GoogleSearch()
-    # )
 
     response = client.models.generate_content(
         model=MODEL_NAME,
@@ -112,7 +93,10 @@ def generate_summary(text):
             response_mime_type="application/json",
             response_schema=response_schema,
             system_instruction=system_instruction,
-            # tools=[google_search_tool],
+            tools=[
+                {"url_context": {}},
+                {"google_search": {}},
+            ],
         ),
     )
 
@@ -163,16 +147,11 @@ def process_url(text, say):
         say("_⚠️ URL が見つかりませんでした。_")
         return
 
-    response = requests.get(url, timeout=10)
-    url = response.url
-    debug_log("url (after requests.get())", url)
-
-    article = extract_article_text(url)
-    title = article["title"]
-    text = article["text"]
+    debug_log("url", url)
 
     # 生成AIでサマリを作成
-    generated = generate_summary(text)
+    generated = generate_summary(url)
+    title = generated["title"]
     summary = generated["summary"]
     keywords = generated["keywords"]
 
@@ -254,17 +233,11 @@ def reaction_add(event, say, client):
     # 処理中リアクション追加
     client.reactions_add(channel=channel, timestamp=ts, name=SLACK_PROCESSING_REACTION_KEY)
 
-    response = requests.get(url, timeout=10)
-    url = response.url
     debug_log("url", url)
 
-    # 記事タイトル、本文抜き出し
-    article = extract_article_text(url)
-    title = article["title"]
-    text = article["text"]
-
     # 生成AIでサマリとキーワードを取得
-    generated = generate_summary(text)
+    generated = generate_summary(url)
+    title = generated["title"]
     summary = generated["summary"]
     keywords = generated["keywords"]
 
