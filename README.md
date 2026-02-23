@@ -106,6 +106,7 @@ gcloud functions deploy slack_events_fn \
   --allow-unauthenticated \
   --entry-point slack_events_fn \
   --memory 512MB \
+  --timeout 60 \
 ```
 
 **Parameters:**
@@ -115,6 +116,7 @@ gcloud functions deploy slack_events_fn \
 - **--allow-unauthenticated**: Allow public access.
 - **--entry-point**: The function to execute (`slack_events_fn`).
 - **--memory**: Allocate enough memory (recommended 512MB or higher).
+- **--timeout**: Function execution timeout in seconds. Adjust between **60–300** depending on the model. Lightweight models like `gemini-2.0-flash` work well with the default of 60s, while larger models (e.g., `gemini-2.5-pro`) may require a longer timeout (up to 300s).
 
 #### c. Note the Function URL
 
